@@ -96,11 +96,13 @@
     mix-blend-mode: multiply;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-1rem);
-    transition: opacity .2s ease, transform .2s ease;
+    transform: translateY(-100%);
+    transition: opacity .25s ease, transform .25s ease;
   }
 
-  body.is-story-header .site-header {
+  /* The fixed title slides up and out of frame as you scroll past the story — moving
+     with the content — instead of hanging at the top over the rising image. */
+  body.is-title-visible .site-header {
     opacity: 1;
     transform: translateY(0);
   }
@@ -366,7 +368,6 @@
     transition: opacity .18s ease, transform .18s ease;
   }
 
-  .hotspot:hover,
   .hotspot:focus-visible,
   .hotspot.is-active {
     transform: translate(-50%, -50%) scale(1.14);
@@ -376,18 +377,39 @@
     outline: 0;
   }
 
-  .hotspot:hover::before,
   .hotspot:focus-visible::before,
   .hotspot.is-active::before {
     opacity: .45;
     transform: scale(1.22);
   }
 
-  .hotspot:hover span,
   .hotspot:focus-visible span,
   .hotspot.is-active span {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+
+  /* Hover only on devices that truly hover. On touch, :hover sticks after a tap,
+     which would leave a tapped dot stuck open even after scrolling activates a new
+     one — so there, only .is-active controls the open state. */
+  @media (hover: hover) {
+    .hotspot:hover {
+      transform: translate(-50%, -50%) scale(1.14);
+      border-color: var(--accent);
+      background: rgba(251, 244, 230, .92);
+      box-shadow: 0 0 0 2px rgba(251, 244, 230, .78), 0 4px 12px rgba(44, 33, 22, .14);
+      outline: 0;
+    }
+
+    .hotspot:hover::before {
+      opacity: .45;
+      transform: scale(1.22);
+    }
+
+    .hotspot:hover span {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 
   /* Real keyboard focus ring (the box-shadow alone disappears in forced-colors mode). */
@@ -445,6 +467,7 @@
     color: #211e19;
     font-size: 1.42rem;
     line-height: 1.32;
+    white-space: pre-line;
   }
 
   .quote::before {
@@ -475,62 +498,107 @@
     line-height: 1.58;
   }
 
+  /* Bottom progress indicator: one quiet tick per item. The active tick lights up
+     and a thin track fills to your position, showing how far through the apartment
+     you've scrolled. Still clickable to jump to an item. */
   .rail {
     position: sticky;
     bottom: 0;
     z-index: 10;
-    border-top: 1px solid rgba(25, 23, 19, .18);
-    background: rgba(251, 244, 230, .88);
+    border-top: 1px solid rgba(25, 23, 19, .12);
+    background: rgba(251, 244, 230, .82);
     backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease;
+  }
+
+  /* Reveal the progress bar only while moving through the apartment — it slides up
+     on entering the story and tucks away on the hero and the closing section,
+     leaving the "scroll to move" cue unobstructed on the home view. */
+  body.is-story-header .rail {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .rail-inner {
+    position: relative;
     width: min(1500px, calc(100% - 2rem));
     margin: 0 auto;
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(7.5rem, 1fr);
-    gap: .3rem;
-    overflow-x: auto;
-    padding: .55rem 0;
+    display: flex;
+    align-items: center;
+    padding: .8rem 0;
+  }
+
+  .rail-inner::before,
+  .rail-inner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .rail-inner::before {
+    right: 0;
+    background: rgba(25, 23, 19, .16);
+  }
+
+  .rail-inner::after {
+    width: var(--progress, 0%);
+    background: var(--progress-color, var(--red));
+    transition: width .25s ease, background .25s ease;
   }
 
   .rail-button {
-    min-height: 3.45rem;
+    flex: 1 1 0;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 0;
-    border-left: 1px solid var(--line);
-    padding: .25rem .6rem;
-    color: var(--ink);
+    padding: 0;
     background: transparent;
-    text-align: left;
     cursor: pointer;
   }
 
-  .rail-button:hover,
-  .rail-button.is-active {
-    background: rgba(183, 71, 53, .09);
+  .rail-button::before {
+    content: "";
+    width: 2px;
+    height: .5rem;
+    border-radius: 1px;
+    background: rgba(25, 23, 19, .28);
+    background: color-mix(in srgb, var(--accent, #191713) 34%, transparent);
+    transition: height .2s ease, width .2s ease, background .2s ease;
+  }
+
+  .rail-button:hover::before {
+    height: .8rem;
+    background: color-mix(in srgb, var(--accent, #191713) 62%, transparent);
+  }
+
+  /* Active item: the tick blooms into a small accent dot — a playhead on the track. */
+  .rail-button.is-active::before {
+    width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    background: var(--accent, var(--red));
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--accent, var(--red)) 16%, transparent);
   }
 
   .rail-button:focus-visible {
-    background: rgba(183, 71, 53, .09);
     outline: 2px solid var(--blue);
     outline-offset: -2px;
-  }
-
-  .rail-label {
-    display: block;
-    margin-top: .16rem;
-    font-family: var(--serif);
-    font-size: .88rem;
-    font-weight: 520;
-    line-height: 1.08;
   }
 
   .ledger {
     width: min(1240px, calc(100% - 2rem));
     margin: 0 auto;
     padding: clamp(4rem, 8vw, 7rem) 0;
-    border-top: 1px solid var(--ink);
   }
 
   .ledger-head {
@@ -552,9 +620,12 @@
 
   .ledger-copy {
     margin: 0;
-    color: #4f453a;
-    font-size: 1.12rem;
-    line-height: 1.55;
+    color: #3f372f;
+    font-family: var(--serif);
+    font-size: clamp(1.2rem, 1.9vw, 1.55rem);
+    font-style: italic;
+    line-height: 1.45;
+    text-wrap: balance;
   }
 
   .ledger-note {
@@ -730,7 +801,8 @@
     .image-plane,
     .hotspot-plane,
     .hotspot span,
-    .item-title {
+    .item-title,
+    .rail {
       transition: none;
     }
   }
@@ -829,12 +901,10 @@
       box-shadow: 0 0 0 2px rgba(251, 244, 230, .62);
     }
 
-    .hotspot span {
+    /* Drop the bottom item rail on phones — it eats scarce vertical space and the
+       pinned room + scroll already serve as navigation. */
+    .rail {
       display: none;
-    }
-
-    .rail-inner {
-      width: calc(100% - 1rem);
     }
   }
 </style>
@@ -889,7 +959,7 @@
       <div>
         <h2 id="ledger-title">What wonder becomes.</h2>
       </div>
-      <p class="ledger-copy">The hard part is not noticing a new marvel. It is remembering it after it has become furniture.</p>
+      <p class="ledger-copy">Noticing the new marvels is easy. What's hard is conjuring that feeling for the ones that have long since become furniture.</p>
     </div>
     <figure class="room-reveal" id="roomReveal">
       <img class="rc-img rc-after" src="assets/abundance-room-v4.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The full illustrated apartment, every once-miraculous object now sitting together as ordinary furniture.">
@@ -930,7 +1000,7 @@ const ITEMS = [
     availableSort: 1882,
     who: "A witness at Wabash, Indiana",
     quote: "The strange, weird light, exceeded in power only by the sun, rendered the square as light as midday ... we contemplated the new wonder of science, as lightning was brought down from the heavens.",
-    source: "The night the first city on earth was lit by electric light.",
+    source: "The night Wabash, Indiana became one of the first cities lit entirely by electric light.",
     context: "Before electric lighting, households relied on candles, oil lamps, gaslight, or daylight. Evening work was dimmer, smokier, and more fire-prone.",
     x: 10,
     y: 58,
@@ -1002,7 +1072,7 @@ const ITEMS = [
   },
   {
     id: "fruit",
-    title: "The rented pineapple",
+    title: "Fruit from afar",
     object: "Pineapple",
     then: "Imported fruit",
     year: "1822",
@@ -1041,7 +1111,7 @@ const ITEMS = [
     availableYear: "1829",
     availableSort: 1829,
     who: "Philip Hone",
-    quote: "Water! Water! is the universal note which is sounded in every part of the city, and infuses joy and exultation into the masses.",
+    quote: "Water! Water! is the universal note which is sounded through every part of the city, and infuses joy and exultation into the masses.",
     source: "On the arrival of Croton water in New York City, in his diary.",
     context: "Before treated municipal water and indoor plumbing, drinking water often came from wells, pumps, rivers, or vendors. Contaminated water was a common source of disease.",
     x: 41,
@@ -1057,7 +1127,7 @@ const ITEMS = [
     availableYear: "1913",
     availableSort: 1913,
     who: "The Calcutta Courier",
-    quote: "The first transport of ice from the shores of the United States to the banks of the Ganges is an event of no mean importance ... the names of those who carried it through deserve to be handed down with other benefactors of mankind.",
+    quote: "The first transport of ice from the shores of the United States to the banks of the Ganges is an event of no mean importance ... the names of those who planned and have successfully carried through their adventure at their own cost, deserve to be handed down to posterity with the name of other benefactors of mankind.",
     source: "On the arrival of New England pond-ice in tropical India.",
     context: "Before mechanical refrigeration, cold storage depended on harvested ice, cellars, salting, drying, or quick consumption. Perishable food spoiled quickly in warm weather.",
     x: 47,
@@ -1098,7 +1168,7 @@ const ITEMS = [
   },
   {
     id: "plumbing",
-    title: "An indoor bathroom",
+    title: "The end of the outhouse",
     object: "Indoor plumbing",
     then: "Indoor plumbing",
     year: "early 1900s",
@@ -1133,7 +1203,7 @@ const ITEMS = [
     title: "Pain, interrupted",
     object: "Medicine",
     then: "Anesthesia",
-    year: "1846",
+    year: "1868",
     availableYear: "1846",
     availableSort: 1846,
     who: "Epitaph of W. T. G. Morton",
@@ -1162,16 +1232,16 @@ const ITEMS = [
   },
   {
     id: "laundry",
-    title: "Wash day mechanized",
+    title: "The washtub retired",
     object: "Washing machine",
     then: "Automated laundry",
-    year: "1891",
+    year: "1797",
     availableYear: "1908",
     availableSort: 1908,
-    who: "Oscar Wilde",
-    quote: "All monotonous, dull labour, all labour that deals with dreadful things and involves unpleasant conditions, must be done by machinery ... while humanity is enjoying cultivated leisure, machinery will be doing all the necessary and unpleasant work.",
-    source: "The Soul of Man under Socialism.",
-    context: "Before washing machines, laundry required hauling water, heating it, scrubbing clothes by hand, rinsing, and wringing. It was heavy recurring labor.",
+    who: "Anna Laetitia Barbauld",
+    quote: "Come, Muse, and sing the dreaded Washing-Day.\nYe who beneath the yoke of wedlock bend,\nWith bowed soul, full well ye ken the day",
+    source: "From her poem 'Washing-Day.'",
+    context: "Before washing machines, laundry required hauling water, heating it, scrubbing clothes by hand, rinsing, and wringing. It was heavy recurring labor, borne almost entirely by women and widely reckoned the hardest and most dreaded chore of the week.",
     x: 74,
     y: 63,
     color: "#154f65"
@@ -1197,11 +1267,11 @@ const ITEMS = [
     title: "The old wish to fly",
     object: "Air travel",
     then: "Human flight",
-    year: "early 1900s",
+    year: "1908",
     availableYear: "1914",
     availableSort: 1914,
     who: "Wilbur Wright",
-    quote: "The desire to fly is an idea handed down to us by our ancestors who, in their grueling travels across trackless lands in prehistoric times, looked enviously on the birds soaring freely through space, at full speed, above all obstacles, on the infinite highway of the air.",
+    quote: "The desire to fly after the fashion of birds is an ideal handed down to us by our ancestors who, in their grueling travels across trackless lands in prehistoric times, looked enviously on the birds soaring freely through space, at full speed, above all obstacles, on the infinite highway of the air.",
     source: "On the old human wish to fly.",
     context: "Before powered flight, long-distance travel depended on roads, rails, ships, and terrain. Mountains, oceans, and weather imposed hard limits on speed and route.",
     x: 91,
@@ -1213,6 +1283,7 @@ const ITEMS = [
 
 const state = { activeId: ITEMS[0].id };
 const byId = new Map(ITEMS.map((item, index) => [item.id, { ...item, index }]));
+const lastItemId = ITEMS[ITEMS.length - 1].id;
 const buttons = new Map();
 const railButtons = new Map();
 const steps = new Map();
@@ -1276,7 +1347,8 @@ function updateRoomFocus(item = byId.get(state.activeId)) {
   }
 
   const compact = window.matchMedia("(max-width: 1050px)").matches;
-  const scale = compact ? 1.02 : (item.zoom || 1.16);
+  // Stronger zoom on the smaller mobile/tablet viewport so the active object reads clearly.
+  const scale = compact ? 1.5 : (item.zoom || 1.16);
   let tx = (frame.width / 2) - ((item.x / 100) * baseWidth * scale);
   let ty = (frame.height / 2) - ((item.y / 100) * baseHeight * scale);
   const minTx = frame.width - (baseWidth * scale);
@@ -1338,7 +1410,9 @@ function makeRail(item) {
   button.type = "button";
   button.className = "rail-button";
   button.dataset.id = item.id;
-  button.innerHTML = `<span class="rail-year">${esc(item.year)}</span><span class="rail-label">${esc(item.object)}</span>`;
+  button.style.setProperty("--accent", item.color);
+  button.title = `${item.object} · ${item.year}`;
+  button.setAttribute("aria-label", `${item.object}, ${item.year}`);
   button.addEventListener("click", () => goToStep(item.id));
   rail.appendChild(button);
   railButtons.set(item.id, button);
@@ -1365,13 +1439,13 @@ function setActive(id, options = {}) {
     button.setAttribute("aria-current", active ? "true" : "false");
   });
 
+  // Fill the progress track to the active tick's position, tinted to its accent.
+  rail.style.setProperty("--progress", `${((item.index + 0.5) / ITEMS.length) * 100}%`);
+  rail.style.setProperty("--progress-color", item.color);
+
   steps.forEach((step, key) => {
     step.classList.toggle("is-active", key === id);
   });
-
-  if (!options.passive) {
-    railButtons.get(id)?.scrollIntoView({ behavior: motionBehavior(), inline: "center", block: "nearest" });
-  }
 }
 
 ITEMS.forEach((item) => {
@@ -1385,16 +1459,20 @@ let scrollFrame = 0;
 function syncActiveFromScroll() {
   scrollFrame = 0;
   if (storySection) {
-    // Show the floating title only while the story section spans the top of the
-    // viewport — hide it once we've scrolled past into "What wonder becomes", where
-    // the backgroundless header text would otherwise overlay the heading and image.
     const storyRect = storySection.getBoundingClientRect();
     const inStory = storyRect.top <= 18 && storyRect.bottom > 60;
+    // Progress bar: visible the whole way through the story.
     document.body.classList.toggle("is-story-header", inStory);
+    // Floating title: also bow out once the final card is active, so it slides up and
+    // away before the sticky room releases and scrolls up under it (no more overlap).
+    document.body.classList.toggle("is-title-visible", inStory && state.activeId !== lastItemId);
   }
   if (Date.now() < manualNavigationUntil) return;
 
-  const readingLine = window.innerHeight * 0.58;
+  // Lower the trigger line on mobile (where the room is pinned at the top) so the
+  // room's focus advances to the next item a little earlier in the scroll.
+  const compact = window.matchMedia("(max-width: 1050px)").matches;
+  const readingLine = window.innerHeight * (compact ? 0.68 : 0.58);
   let candidateId = ITEMS[0].id;
   let candidateTop = -Infinity;
 
