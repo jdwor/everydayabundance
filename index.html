@@ -616,7 +616,7 @@
   .ledger h2 {
     max-width: 9ch;
     margin: .55rem 0 0;
-    font-size: 4.8rem;
+    font-size: 3.9rem;
     font-weight: 520;
     line-height: .86;
     letter-spacing: 0;
@@ -630,6 +630,7 @@
     font-style: italic;
     line-height: 1.45;
     text-wrap: balance;
+    text-align: right;
   }
 
   .ledger-note {
@@ -641,11 +642,9 @@
     text-transform: uppercase;
   }
 
-  /* Closing reveal: a before/after the reader can scrub — the bare shell versus the
-     same apartment filled with every marvel the piece just walked through. Pull the
-     handle and two thousand years of wonder appear, or vanish back into an empty room. */
+  /* Closing image: the apartment filled with every marvel the piece just walked
+     through, now sitting together as ordinary furniture. */
   .room-reveal {
-    --pos: 50%;
     position: relative;
     margin: 0;
     overflow: hidden;
@@ -653,7 +652,6 @@
     background: #eadcc2;
     box-shadow: 0 18px 60px rgba(44, 33, 22, .15);
     aspect-ratio: 1672 / 941;
-    touch-action: pan-y;
   }
 
   .rc-img {
@@ -667,115 +665,6 @@
     -webkit-user-drag: none;
   }
 
-  /* The "before" (bare) layer sits on top, revealed from the left edge to the handle. */
-  .rc-before {
-    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
-  }
-
-  .rc-divider {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: var(--pos);
-    width: 2px;
-    transform: translateX(-1px);
-    background: rgba(251, 244, 230, .92);
-    box-shadow: 0 0 0 1px rgba(44, 33, 22, .3);
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  .rc-handle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 50%;
-    background: var(--paper-warm);
-    border: 1px solid rgba(44, 33, 22, .38);
-    box-shadow: 0 4px 14px rgba(44, 33, 22, .28);
-    display: grid;
-    place-items: center;
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 1rem;
-    line-height: 1;
-  }
-
-  .rc-handle::before {
-    content: "\2039\2009\203A";
-    letter-spacing: .05em;
-  }
-
-  /* Full-bleed transparent range = the scrubber: pointer drag + keyboard for free. */
-  .rc-range {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    cursor: ew-resize;
-    -webkit-appearance: none;
-    appearance: none;
-    z-index: 4;
-  }
-
-  .rc-range::-webkit-slider-runnable-track {
-    height: 100%;
-  }
-
-  .rc-range::-moz-range-track {
-    height: 100%;
-    background: transparent;
-  }
-
-  .rc-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 2.6rem;
-    height: 100%;
-    background: transparent;
-    cursor: ew-resize;
-  }
-
-  .rc-range::-moz-range-thumb {
-    width: 2.6rem;
-    height: 100%;
-    border: 0;
-    background: transparent;
-    cursor: ew-resize;
-  }
-
-  .rc-range:focus-visible {
-    outline: 2px solid var(--blue);
-    outline-offset: 3px;
-  }
-
-  .rc-label {
-    position: absolute;
-    bottom: .7rem;
-    z-index: 3;
-    padding: .2rem .55rem;
-    background: rgba(25, 23, 19, .58);
-    color: #f6efe0;
-    font-family: var(--sans);
-    font-size: .62rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    pointer-events: none;
-  }
-
-  .rc-label-before {
-    left: .7rem;
-  }
-
-  .rc-label-after {
-    right: .7rem;
-  }
 
   .visually-hidden {
     position: absolute;
@@ -816,6 +705,11 @@
     .chapter,
     .ledger-head {
       grid-template-columns: 1fr;
+    }
+
+    /* Once the ledger head stacks, the right-justified copy reads oddly — left-align it. */
+    .ledger-copy {
+      text-align: left;
     }
 
     .hero {
@@ -970,13 +864,8 @@
       </div>
       <p class="ledger-copy">Noticing the new marvels is easy. What's hard is conjuring that feeling for the ones that have long since become furniture.</p>
     </div>
-    <figure class="room-reveal" id="roomReveal">
-      <img class="rc-img rc-after" src="assets/abundance-room-v4.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The full illustrated apartment, every once-miraculous object now sitting together as ordinary furniture.">
-      <img class="rc-img rc-before" src="assets/abundance-room-v4-no-innovations.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The same apartment stripped of its modern conveniences — bare shelves, empty walls, no appliances.">
-      <span class="rc-label rc-label-before" aria-hidden="true">Without</span>
-      <span class="rc-label rc-label-after" aria-hidden="true">With</span>
-      <span class="rc-divider" aria-hidden="true"><span class="rc-handle"></span></span>
-      <input class="rc-range" id="roomRevealRange" type="range" min="0" max="100" value="50" step="0.1" aria-label="Slide to fill or empty the apartment of its everyday wonders">
+    <figure class="room-reveal">
+      <img class="rc-img" src="assets/abundance-room-v4.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The full illustrated apartment, every once-miraculous object now sitting together as ordinary furniture.">
     </figure>
   </section>
 </main>
@@ -1513,15 +1402,6 @@ window.addEventListener("resize", () => {
 setActive(state.activeId, { passive: true });
 queueScrollSync();
 
-// Before/after reveal: the range is the single source of truth (pointer drag and
-// keyboard both move it); we mirror its value onto --pos, which clips the bare layer.
-const roomReveal = document.getElementById("roomReveal");
-const roomRevealRange = document.getElementById("roomRevealRange");
-if (roomReveal && roomRevealRange) {
-  const syncReveal = () => roomReveal.style.setProperty("--pos", `${roomRevealRange.value}%`);
-  roomRevealRange.addEventListener("input", syncReveal);
-  syncReveal();
-}
 </script>
 </body>
 </html>
