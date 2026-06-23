@@ -127,7 +127,7 @@
   .hero-grid > div {
     position: relative;
     z-index: 2;
-    max-width: 38rem;
+    max-width: 44rem;
   }
 
   .rail-year,
@@ -151,12 +151,13 @@
   }
 
   h1 {
-    max-width: 14ch;
+    max-width: 12ch;
     margin: 0 0 1.15rem;
     font-size: 7.7rem;
     font-weight: 520;
     line-height: .88;
     letter-spacing: 0;
+    overflow-wrap: normal;
   }
 
   .dek {
@@ -170,28 +171,16 @@
   .hero-art {
     position: absolute;
     z-index: 1;
-    inset: 7% -4% 4rem 34%;
+    inset: -8% -4% -8% 32%;
     margin: 0;
     opacity: .12;
     pointer-events: none;
     mix-blend-mode: multiply;
     background-image: var(--room-img);
     background-repeat: no-repeat;
-    background-position: right bottom;
-    background-size: contain;
+    background-position: center right;
+    background-size: cover;
     filter: saturate(.9) contrast(.95);
-  }
-
-  .hero-art::before {
-    content: "";
-    position: absolute;
-    left: -4%;
-    right: 10%;
-    bottom: -1.2rem;
-    height: 16%;
-    border-radius: 50%;
-    background: var(--shadow);
-    filter: blur(18px);
   }
 
   .hero-art::after {
