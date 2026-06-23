@@ -747,9 +747,22 @@
       padding-top: 5.5rem;
     }
 
+    /* The pinned room provides context here, so the floating title header (which
+       would otherwise overlap the room's top edge) is unnecessary. */
+    .site-header {
+      display: none;
+    }
+
+    /* Pin the interactive room to the top of the viewport while the story cards
+       scroll beneath it (mobile scrollytelling). Without this the room scrolls
+       away above the cards. The opaque backing + shadow hide cards passing behind. */
     .room-stage {
-      position: relative;
-      top: auto;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: .4rem 0 .7rem;
+      background: var(--paper-warm);
+      box-shadow: 0 .6rem .9rem -.5rem var(--shadow);
     }
 
     .room-frame {
@@ -759,8 +772,8 @@
     }
 
     .step {
-      min-height: auto;
-      padding: 3.4rem 0;
+      min-height: 66vh;
+      padding: 1.5rem 0;
     }
   }
 
@@ -776,6 +789,12 @@
     h1 {
       font-size: 4.15rem;
       line-height: .92;
+    }
+
+    /* Smaller story heading on phones so it doesn't dominate the screen beneath
+       the pinned room. */
+    .item-title {
+      font-size: 2.6rem;
     }
 
     .hero-grid {
