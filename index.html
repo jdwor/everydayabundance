@@ -370,6 +370,9 @@
 
   .hotspot:focus-visible,
   .hotspot.is-active {
+    /* Lift above sibling hotspots so the visible label paints in front of
+       neighbouring dots rather than behind them. */
+    z-index: 2;
     transform: translate(-50%, -50%) scale(1.14);
     border-color: var(--accent);
     background: rgba(251, 244, 230, .92);
@@ -394,6 +397,7 @@
      one — so there, only .is-active controls the open state. */
   @media (hover: hover) {
     .hotspot:hover {
+      z-index: 2;
       transform: translate(-50%, -50%) scale(1.14);
       border-color: var(--accent);
       background: rgba(251, 244, 230, .92);
@@ -888,11 +892,16 @@
       padding-top: 1rem;
     }
 
-    .story-column,
-    .stage-caption {
+    .story-column {
       width: calc(100% - 2rem);
       margin-left: auto;
       margin-right: auto;
+    }
+
+    /* Hide the caption under the image on phones — its title and author/year
+       just repeat the story text that sits directly below it. */
+    .stage-caption {
+      display: none;
     }
 
     .hotspot {
