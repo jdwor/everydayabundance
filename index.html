@@ -1107,6 +1107,7 @@ const ITEMS = [
     who: "Epitaph of W. T. G. Morton",
     quote: "Before whom, in all time, surgery was agony; by whom pain in surgery was averted and annulled; since whom, science has control of pain.",
     source: "For W. T. G. Morton, who first publicly demonstrated ether anaesthesia.",
+    attribution: "Epitaph of W. T. G. Morton (1868), who first publicly demonstrated ether anaesthesia.",
     context: "Before surgical anesthesia, operations were performed with the patient conscious. Speed, restraint, and alcohol or opiates were among the limited means of managing pain.",
     x: 65,
     y: 43,
@@ -1163,7 +1164,7 @@ const ITEMS = [
   {
     id: "flight",
     title: "The old wish to fly",
-    object: "Air travel",
+    object: "Airplane",
     then: "Human flight",
     year: "1908",
     availableYear: "1914",
@@ -1296,7 +1297,7 @@ function makeStep(item) {
   article.innerHTML = `
     <h3 class="item-title">${esc(item.title)}</h3>
     <blockquote class="quote">${esc(item.quote)}</blockquote>
-    <p class="source">${esc(item.who)}, ${esc(item.year)}. ${esc(item.source)}</p>
+    <p class="source">${item.attribution ? esc(item.attribution) : `${esc(item.who)}, ${esc(item.year)}. ${esc(item.source)}`}</p>
     <p class="context">${esc(item.context)}</p>
   `;
   stepsRoot.appendChild(article);
