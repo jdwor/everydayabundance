@@ -3,8 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Limit of Human Felicity</title>
+<title>Everyday Abundance</title>
+<meta name="description" content="A walk through a modern apartment, where every ordinary object was once someone's impossible dream.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Everyday Abundance">
+<meta property="og:description" content="A walk through a modern apartment, where every ordinary object was once someone's impossible dream.">
+<meta property="og:url" content="https://jdwor.github.io/everydayabundance/">
+<meta property="og:image" content="https://jdwor.github.io/everydayabundance/assets/abundance-room-v8.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <style>
+  /* Fraunces (variable, SIL OFL) for display type — the warm old-style character
+     at large optical sizes matches the illustration; body text stays in the
+     system book serif. */
+  @font-face {
+    font-family: "Fraunces";
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url("assets/fonts/fraunces-latin-var.woff2") format("woff2");
+  }
+
   :root {
     --paper: #f3ead7;
     --paper-warm: #fbf4e6;
@@ -17,8 +35,12 @@
     --green: #687d50;
     --shadow: rgba(44, 33, 22, .18);
     --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    /* Label layer: everything that annotates (kickers, years, captions, rail, cues)
+       sets in mono against the serif body — the editorial serif/mono pairing. */
+    --mono: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, monospace;
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    --room-img: url("assets/abundance-room-v4.jpg");
+    --display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --room-img: url("assets/abundance-room-v8.jpg");
   }
 
   * {
@@ -88,9 +110,9 @@
     gap: 1rem;
     padding: .8rem clamp(1rem, 3vw, 2rem);
     color: rgba(25, 23, 19, .72);
-    font-family: var(--sans);
-    font-size: .72rem;
-    font-weight: 750;
+    font-family: var(--mono);
+    font-size: .7rem;
+    font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
     mix-blend-mode: multiply;
@@ -155,8 +177,10 @@
   h1 {
     max-width: 12ch;
     margin: 0 0 1.15rem;
+    font-family: var(--display);
+    font-optical-sizing: auto;
     font-size: 7.7rem;
-    font-weight: 520;
+    font-weight: 480;
     line-height: .88;
     letter-spacing: 0;
     overflow-wrap: normal;
@@ -202,13 +226,19 @@
     align-items: center;
     justify-content: center;
     gap: .8rem;
-    font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 760;
+    font-family: var(--mono);
+    font-size: .66rem;
+    font-weight: 700;
     letter-spacing: .16em;
     line-height: 1.45;
     text-align: center;
     text-transform: uppercase;
+    transition: opacity .6s ease;
+  }
+
+  /* The cue has done its job after the first real scroll — fade it out. */
+  body.has-scrolled .route-note {
+    opacity: 0;
   }
 
   .route-note::before,
@@ -272,6 +302,33 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
     filter: brightness(1.04) saturate(1.02) contrast(.99);
+    transition: filter .5s ease;
+  }
+
+  /* In-image highlight: while an item is active, the room recedes (dimmed,
+     desaturated, faintly blurred) and a second copy of the image — masked to a
+     soft ellipse at the item, slightly brightened — sits on top. The spotlight
+     position (--fx/--fy, in image coordinates) is eased from JS. */
+  .room-frame.is-focused .image-plane-img {
+    filter: brightness(.8) saturate(.78) contrast(.98) blur(1.6px);
+  }
+
+  .image-plane-focus {
+    position: absolute;
+    inset: 0;
+    background-image: var(--room-img);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: brightness(1.08) saturate(1.05);
+    opacity: 0;
+    transition: opacity .5s ease;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse var(--hw, 11%) var(--hh, 19%) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0 45%, rgba(0, 0, 0, 0) 100%);
+    mask-image: radial-gradient(ellipse var(--hw, 11%) var(--hh, 19%) at var(--fx, 50%) var(--fy, 50%), rgba(0, 0, 0, 1) 0 45%, rgba(0, 0, 0, 0) 100%);
+  }
+
+  .room-frame.is-focused .image-plane-focus {
+    opacity: 1;
   }
 
   .hotspot-plane {
@@ -280,7 +337,10 @@
   }
 
 
+  /* Retired in favor of the in-image spotlight (.image-plane-focus); kept in
+     the markup so the layer can be revived without surgery. */
   .focus-wash {
+    display: none;
     position: absolute;
     inset: 0;
     z-index: 2;
@@ -357,9 +417,9 @@
     background: rgba(250, 241, 223, .88);
     box-shadow: 0 .28rem .85rem rgba(44, 33, 22, .13);
     backdrop-filter: blur(5px);
-    font-family: var(--sans);
-    font-size: .62rem;
-    font-weight: 650;
+    font-family: var(--mono);
+    font-size: .6rem;
+    font-weight: 600;
     line-height: 1;
     letter-spacing: .03em;
     text-transform: uppercase;
@@ -429,14 +489,14 @@
     gap: 1rem;
     margin: .75rem 0 0;
     color: #5d5348;
-    font-family: var(--sans);
-    font-size: .78rem;
-    line-height: 1.35;
+    font-family: var(--mono);
+    font-size: .72rem;
+    line-height: 1.4;
   }
 
   .active-mini {
     color: var(--red);
-    font-weight: 820;
+    font-weight: 700;
     letter-spacing: .08em;
     text-transform: uppercase;
   }
@@ -457,16 +517,21 @@
     color: var(--blue);
   }
 
+  /* The quote is the star; the title is a quiet heading above it. What the object
+     is lives in the caption under the image, not here. */
   .item-title {
-    margin: 0 0 .9rem;
-    font-size: 3.35rem;
+    margin: 0 0 1.1rem;
+    font-family: var(--display);
+    font-optical-sizing: auto;
+    font-size: 2.1rem;
     font-weight: 520;
-    line-height: .98;
+    line-height: 1.04;
     letter-spacing: 0;
     transition: color .2s ease;
   }
 
   .quote {
+    position: relative;
     margin: 0;
     color: #211e19;
     font-size: 1.42rem;
@@ -474,8 +539,13 @@
     white-space: pre-line;
   }
 
+  /* Hang the opening quote mark in the margin by exactly its own glyph width —
+     a fixed text-indent overshoots (the mark is narrower than any guessed
+     distance), which pushed every first line slightly left of the text edge. */
   .quote::before {
     content: open-quote;
+    position: absolute;
+    transform: translateX(-100%);
     color: var(--red);
   }
 
@@ -484,14 +554,27 @@
     color: var(--red);
   }
 
+  /* Attribution: name and year in mono caps, the sourcing note in serif italic —
+     two registers on one line, like a caption under museum wall text. */
   .source {
     margin: .9rem 0 0;
     color: #655749;
-    font-family: var(--sans);
-    font-size: .86rem;
-    font-weight: 650;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: .98rem;
     letter-spacing: 0;
-    line-height: 1.35;
+    line-height: 1.45;
+  }
+
+  .source-name {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    color: #56493c;
   }
 
   .context {
@@ -500,6 +583,72 @@
     color: #4f453a;
     font-size: 1.03rem;
     line-height: 1.58;
+  }
+
+  /* Scene interstitials: connective tissue between rooms. Deliberately flat,
+     domestic prose — the historical quotes do the arguing — set apart by a scene
+     label and a drop cap, with the camera resting at a wide shot of the zone. */
+  .scene-step {
+    min-height: 56vh;
+  }
+
+  .scene-kicker {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin: 0 0 1.3rem;
+    color: var(--accent-ink, var(--red));
+    font-family: var(--mono);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .scene-kicker::after {
+    content: "";
+    flex: 1;
+    max-width: 5.5rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--accent-ink, var(--red)) 45%, transparent);
+  }
+
+  .scene-text {
+    max-width: 32rem;
+    margin: 0;
+    color: #3c352c;
+    font-size: 1.38rem;
+    line-height: 1.55;
+  }
+
+  .scene-text::first-letter,
+  .coda-text::first-letter {
+    float: left;
+    padding: .06em .12em 0 0;
+    color: var(--accent-ink, var(--red));
+    font-family: var(--display);
+    font-size: 3.3em;
+    font-weight: 500;
+    line-height: .8;
+  }
+
+  /* The coda: the evening's last line, centered on the page between the tour
+     and the closing reveal, set exactly like the narrative interstitials —
+     same divider rule, same drop cap — for continuity with the scenes above. */
+  .coda {
+    --accent-ink: #5d5348;
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: clamp(2rem, 5vh, 3.5rem) 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .coda-text {
+    max-width: 32rem;
+    margin: 0 auto;
+    color: #3c352c;
+    font-size: 1.38rem;
+    line-height: 1.55;
   }
 
   /* Bottom progress indicator: one quiet tick per item. The active tick lights up
@@ -558,6 +707,12 @@
     transition: width .25s ease, background .25s ease;
   }
 
+  /* A gap before the first tick of each scene groups the rail into rooms, so
+     progress reads as "scene three of four," not "beat fourteen of nineteen." */
+  .rail-button.scene-start {
+    margin-left: clamp(.8rem, 2.5vw, 2rem);
+  }
+
   .rail-button {
     flex: 1 1 0;
     height: 1.5rem;
@@ -605,42 +760,47 @@
     padding: clamp(4rem, 8vw, 7rem) 0;
   }
 
-  .ledger-head {
+  /* The close: the figure pins while the closing copy scrolls over it on the
+     page's own scroll — moving text is its own "keep going" cue — then, after
+     the last card passes, the lights go out (--dark scrubbed from JS) and the
+     bottom padding gives the dark room a beat before the pin releases. */
+  .close-pin {
+    position: sticky;
+    top: clamp(1rem, 5svh, 3.5rem);
+  }
+
+  /* The first card starts already over the room (negative margin pulls it into
+     the figure's lower half), and the deep padding-bottom is the fade runway —
+     it must be on this child, not the stage: sticky positioning confines the
+     pinned figure to its parent's CONTENT box, so stage padding wouldn't count. */
+  .close-steps {
+    position: relative;
+    z-index: 4;
     display: grid;
-    grid-template-columns: minmax(0, .7fr) minmax(280px, .5fr);
-    gap: clamp(1.4rem, 4vw, 4rem);
-    align-items: end;
-    margin-bottom: clamp(1.75rem, 4vw, 3rem);
+    justify-items: center;
+    row-gap: 30vh;
+    margin-top: -34vh;
+    padding: 0 1rem 195vh;
   }
 
-  .ledger h2 {
-    max-width: 9ch;
-    margin: .55rem 0 0;
-    font-size: 3.9rem;
-    font-weight: 520;
-    line-height: .86;
-    letter-spacing: 0;
-  }
-
-  .ledger-copy {
+  /* Wall-text placards, not dialog boxes: the page's own paper and grain,
+     hairline rules in the divider style, only a whisper of shadow. */
+  .close-card {
+    max-width: 33rem;
     margin: 0;
-    color: #3f372f;
-    font-family: var(--serif);
-    font-size: clamp(1.2rem, 1.9vw, 1.55rem);
-    font-style: italic;
-    line-height: 1.45;
-    text-wrap: balance;
-    text-align: right;
+    padding: 1.5rem 1.9rem;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(rgba(25, 23, 19, .05) .55px, transparent .55px) 0 0 / 13px 13px,
+      rgba(251, 244, 230, .97);
+    box-shadow: 0 8px 28px rgba(44, 33, 22, .12);
+    color: #33302a;
+    font-size: 1.16rem;
+    line-height: 1.62;
   }
 
-  .ledger-note {
-    margin: 1rem 0 0;
-    color: #756b5f;
-    font-family: var(--sans);
-    font-size: .78rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
 
   /* Closing image: the apartment filled with every marvel the piece just walked
      through, now sitting together as ordinary furniture. */
@@ -665,6 +825,81 @@
     -webkit-user-drag: none;
   }
 
+  /* The closing turn: as the full room scrolls into view, its markers light one by
+     one in the order the miracles arrived — spices first, flight last — re-reading
+     the same room in time instead of space. */
+  .reveal-dots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .reveal-dot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: .6rem;
+    height: .6rem;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(25, 23, 19, .5);
+    border-radius: 50%;
+    background: rgba(251, 244, 230, .9);
+    box-shadow: 0 0 0 2px rgba(251, 244, 230, .5);
+    opacity: 0;
+    transition: opacity .5s ease;
+    transition-delay: var(--delay, 0s);
+  }
+
+  .room-reveal.is-bloomed .reveal-dot {
+    opacity: 1;
+  }
+
+  /* The lights going out: a black wash over the image (and its dots), scrubbed
+     by scroll progress. */
+  .room-dark {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: #0c0a07;
+    opacity: var(--dark, 0);
+    pointer-events: none;
+  }
+
+
+
+  /* Quiet colophon: mono label register, barely-there, left-aligned with the
+     closing figure above it. */
+  .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .4rem;
+    width: min(1240px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 1rem 0 2rem;
+    color: #a89c8a;
+    font-family: var(--mono);
+    font-size: .6rem;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .mail-link {
+    display: inline-flex;
+    padding: .25rem;
+    color: inherit;
+    transition: color .15s ease;
+  }
+
+  .mail-link:hover {
+    color: var(--red);
+  }
+
+  .mail-link:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
 
   .visually-hidden {
     position: absolute;
@@ -695,21 +930,43 @@
     .hotspot-plane,
     .hotspot span,
     .item-title,
+    .route-note,
     .rail {
       transition: none;
+    }
+
+    /* No staggered bloom — the closing markers simply appear together. */
+    .reveal-dot {
+      transition: none;
+      transition-delay: 0s;
     }
   }
 
   @media (max-width: 1050px) {
     .hero-grid,
-    .chapter,
-    .ledger-head {
+    .chapter {
       grid-template-columns: 1fr;
     }
 
-    /* Once the ledger head stacks, the right-justified copy reads oddly — left-align it. */
-    .ledger-copy {
-      text-align: left;
+    /* No pinned close on small screens: the copy sits below the image as plain
+       text, and the darkness follows the figure up as the page scrolls past it. */
+    .close-pin {
+      position: static;
+    }
+
+    .close-steps {
+      row-gap: 1.4rem;
+      margin-top: 2rem;
+      padding: 0;
+    }
+
+    .close-card {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      max-width: 38rem;
+      color: #3c352c;
     }
 
     .hero {
@@ -745,6 +1002,10 @@
       min-height: 66vh;
       padding: 1.5rem 0;
     }
+
+    .scene-step {
+      min-height: 46vh;
+    }
   }
 
   @media (max-width: 720px) {
@@ -764,7 +1025,7 @@
     /* Smaller story heading on phones so it doesn't dominate the screen beneath
        the pinned room. */
     .item-title {
-      font-size: 2.6rem;
+      font-size: 1.7rem;
     }
 
     .hero-grid {
@@ -809,13 +1070,18 @@
     .rail {
       display: none;
     }
+
+    .scene-text,
+    .coda-text {
+      font-size: 1.16rem;
+    }
   }
 </style>
 </head>
 <body>
 <a class="skip-link" href="#story">Skip to story</a>
 <header class="site-header" aria-hidden="true">
-  <span>The Limit of Human Felicity</span>
+  <span>Everyday Abundance</span>
 </header>
 
 <main>
@@ -836,6 +1102,7 @@
       <div class="room-frame">
         <div class="image-plane" id="imagePlane">
           <div class="image-plane-img" role="img" aria-label="An editorial illustration of a modern apartment with everyday objects including a speaker, lamp, books, refrigerator, faucet, medicine cabinet, washing machine, and bicycle."></div>
+          <div class="image-plane-focus" aria-hidden="true"></div>
         </div>
         <div class="focus-wash" id="focusWash" aria-hidden="true"></div>
         <div class="hotspot-plane" id="hotspotPlane">
@@ -843,8 +1110,8 @@
         </div>
       </div>
       <div class="stage-caption" aria-live="polite" aria-atomic="true">
-        <span class="active-mini" id="activeMini">Any song, at home</span>
-        <span id="activeSource">Edward Bellamy, 1888</span>
+        <span class="active-mini" id="activeMini">The sitting room</span>
+        <span id="activeSource"></span>
       </div>
     </div>
 
@@ -857,18 +1124,40 @@
     <div class="rail-inner" id="rail"></div>
   </nav>
 
-  <section class="ledger" aria-labelledby="ledger-title">
-    <div class="ledger-head">
-      <div>
-        <h2 id="ledger-title">What wonder becomes.</h2>
+  <section class="coda" aria-label="The evening ends">
+    <p class="coda-text">At eleven, you switch off the lights, silence your phone, and lie down to sleep. As your head hits the pillow, you idly wonder what people slept on before mattresses.</p>
+  </section>
+
+  <!-- The close: the full apartment appears whole, its markers bloom, and then —
+       as you keep scrolling — the lights go out. On desktop the figure pins and
+       darkens in place while the closing copy rises into it; on mobile the copy
+       sits below and the darkness follows the page's own scroll. -->
+  <section class="ledger" aria-label="Closing">
+    <div class="close-stage" id="closeStage">
+      <div class="close-pin">
+        <figure class="room-reveal">
+          <img class="rc-img" src="assets/abundance-room-v8.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The full illustrated apartment, every once-miraculous object now sitting together as ordinary furniture.">
+          <div class="room-dark" aria-hidden="true"></div>
+        </figure>
       </div>
-      <p class="ledger-copy">Noticing the new marvels is easy. What's hard is conjuring that feeling for the ones that have long since become furniture.</p>
+      <div class="close-steps" id="closeSteps">
+        <p class="close-card">Every item in this room began as an impossibility; a dream that, if created, could bring immeasurable joy or relief. And every one of them is something we regularly walk past without a second thought.</p>
+        <p class="close-card">It is to humanity’s great credit that we remain restless in the midst of these wonders. We continue to look forward, pushing the frontier further with new treatments, new tools, and new institutions that will help future generations in ways we can’t even picture yet.</p>
+        <p class="close-card">But our lives today are a gallery of past generations’ heroic efforts to do the same. It serves us, and honors them, to recapture whenever possible the old sense of awe at these wonders that have long since become furniture.</p>
+      </div>
     </div>
-    <figure class="room-reveal">
-      <img class="rc-img" src="assets/abundance-room-v4.jpg" loading="lazy" decoding="async" width="1672" height="941" alt="The full illustrated apartment, every once-miraculous object now sitting together as ordinary furniture.">
-    </figure>
   </section>
 </main>
+
+<footer class="site-footer">
+  <span>Built by Jordan Dworkin</span>
+  <a class="mail-link" href="mailto:jordan.dworkin@coefficientgiving.org" aria-label="Email Jordan Dworkin">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <path d="m2 7 10 7 10-7"/>
+    </svg>
+  </a>
+</footer>
 
 <script>
 const ITEMS = [
@@ -883,7 +1172,7 @@ const ITEMS = [
     who: "Edward Bellamy",
     quote: "If we could have devised an arrangement for providing everybody with music in their homes, perfect in quality, unlimited in quantity, suited to every mood, and beginning and ceasing at will, we should have considered the limit of human felicity already attained.",
     source: "Looking Backward, imagining the impossible future of the year 2000.",
-    context: "Before recorded music and radio, hearing music on demand meant having instruments or performers nearby. Most listening was tied to live performance, place, and schedule.",
+    context: "Before recorded music and radio, hearing music on demand meant having instruments or performers nearby. Most listening happened where and when a performance did.",
     x: 16,
     y: 60,
     color: "#d79b2d"
@@ -899,7 +1188,7 @@ const ITEMS = [
     who: "A witness at Wabash, Indiana",
     quote: "The strange, weird light, exceeded in power only by the sun, rendered the square as light as midday ... we contemplated the new wonder of science, as lightning was brought down from the heavens.",
     source: "The night Wabash, Indiana became one of the first cities lit entirely by electric light.",
-    context: "Before electric lighting, households relied on candles, oil lamps, gaslight, or daylight. Evening work was dimmer, smokier, and more fire-prone.",
+    context: "Before electric lighting, households relied on candles, oil lamps, gaslight, or daylight. Evening work was dim and smoky, and every light was a small fire.",
     x: 10,
     y: 58,
     color: "#d79b2d"
@@ -918,6 +1207,8 @@ const ITEMS = [
     context: "Before reliable reproduction, most people saw major artworks only by visiting churches, collections, or museums. Prints and photographs made artworks portable and widely comparable.",
     x: 15,
     y: 38,
+    focusY: 47,
+    zoom: 1.22,
     color: "#154f65"
   },
   {
@@ -932,7 +1223,7 @@ const ITEMS = [
     quote: "The very shadow of the person lying there fixed for ever! ... I would rather have such a memorial of one I dearly loved, than the noblest artist's work ever produced.",
     source: "On first seeing a daguerreotype, in a letter to Mary Russell Mitford.",
     context: "Before photography, preserving a likeness usually required a painted portrait, which was expensive and slow. Many families had no accurate image of relatives who died.",
-    x: 20,
+    x: 19,
     y: 61,
     color: "#b74735"
   },
@@ -947,9 +1238,9 @@ const ITEMS = [
     who: "Friar Giordano da Pisa",
     quote: "It is not twenty years since there was discovered the art of making spectacles ... one of the best and most necessary in the world. I myself saw the man who discovered it, and I talked with him.",
     source: "A sermon at Santa Maria Novella, Florence.",
-    context: "Before spectacles, age-related vision loss could end reading, sewing, and other close work. Corrective lenses extended those tasks into later life.",
+    context: "Before spectacles, age-related vision loss could end reading and other close work. Corrective lenses extended those tasks into later life.",
     x: 24,
-    y: 60,
+    y: 62,
     color: "#154f65"
   },
   {
@@ -964,8 +1255,8 @@ const ITEMS = [
     quote: "Of all the marvellous achievements of modern science, the Electric Telegraph is transcendently the greatest and most serviceable to mankind. It is a perpetual miracle, which no familiarity can render commonplace.",
     source: "The Story of the Telegraph.",
     context: "Before telegraphy and telephony, messages traveled no faster than a courier, horse, ship, or train. Long-distance communication could take days, weeks, or months.",
-    x: 27,
-    y: 77,
+    x: 26,
+    y: 78,
     color: "#154f65"
   },
   {
@@ -980,8 +1271,8 @@ const ITEMS = [
     quote: "Like lovers' kisses, she biteth, she is a pleasure bordering on pain, from the fierceness and insanity of her relish.",
     source: "On the rapture of the pineapple.",
     context: "Before refrigerated transport and global trade, fresh tropical fruit was rare in temperate countries and often very expensive. In eighteenth-century Britain, pineapples were sometimes rented for parties as status objects rather than eaten.",
-    x: 30,
-    y: 72,
+    x: 46,
+    y: 57,
     color: "#d79b2d"
   },
   {
@@ -995,7 +1286,7 @@ const ITEMS = [
     who: "Jacob Wimpheling",
     quote: "A great good, and almost a divine benefit to the world.",
     source: "The German humanist, on the new art of printing.",
-    context: "Before printing, books were copied by hand and were expensive, scarce, and often confined to institutions. The press greatly lowered the cost of access to texts.",
+    context: "Before printing, books were copied by hand, and as a result were expensive and scarce. The press greatly lowered the cost of access to texts.",
     x: 35,
     y: 47,
     color: "#687d50"
@@ -1011,7 +1302,7 @@ const ITEMS = [
     who: "Philip Hone",
     quote: "Water! Water! is the universal note which is sounded through every part of the city, and infuses joy and exultation into the masses.",
     source: "On the arrival of Croton water in New York City, in his diary.",
-    context: "Before treated municipal water and indoor plumbing, drinking water often came from wells, pumps, rivers, or vendors. Contaminated water was a common source of disease.",
+    context: "Before treated municipal water, drinking water often came from wells, pumps, rivers, or vendors. Contaminated water was a common source of disease.",
     x: 41,
     y: 56,
     color: "#154f65"
@@ -1031,22 +1322,6 @@ const ITEMS = [
     x: 47,
     y: 48,
     color: "#687d50"
-  },
-  {
-    id: "coffee",
-    title: "A sober stimulant",
-    object: "Coffee",
-    then: "Coffee",
-    year: "c. 1670s",
-    availableYear: "1650s",
-    availableSort: 1650,
-    who: "London coffee-house verse",
-    quote: "That grave and wholesome liquor, that heals the stomach, makes the genius quicker, relieves the memory, revives the sad, and cheers the spirits, without making mad.",
-    source: "In praise of the new and exotic drink.",
-    context: "Before global trade made coffee common, it was an imported specialty rather than a routine household drink. Its spread depended on long-distance trade and urban coffeehouses.",
-    x: 48,
-    y: 58,
-    color: "#154f65"
   },
   {
     id: "spices",
@@ -1173,16 +1448,90 @@ const ITEMS = [
     quote: "The desire to fly after the fashion of birds is an ideal handed down to us by our ancestors who, in their grueling travels across trackless lands in prehistoric times, looked enviously on the birds soaring freely through space, at full speed, above all obstacles, on the infinite highway of the air.",
     source: "On the old human wish to fly.",
     context: "Before powered flight, long-distance travel depended on roads, rails, ships, and terrain. Mountains, oceans, and weather imposed hard limits on speed and route.",
-    x: 91,
-    y: 29,
+    x: 93,
+    y: 33,
     color: "#154f65"
+  },
+  {
+    id: "heating",
+    title: "Warmth in every room",
+    object: "Heater",
+    then: "Central heating",
+    year: "1796",
+    availableYear: "1880s",
+    availableSort: 1885,
+    who: "Thomas Jefferson",
+    quote: "It is so cold that the freezing of the ink on the point of my pen renders it difficult to write. We have had the thermometer at 12°.",
+    source: "In a letter to his son-in-law, the ink freezing as he wrote.",
+    context: "Before central heating, a single fire warmed one room while the rest of the house stayed near the outdoor temperature. Indoors, water and even ink could freeze.",
+    x: 90,
+    y: 24,
+    color: "#b74735"
   }
 
 ];
 
-const state = { activeId: ITEMS[0].id };
-const byId = new Map(ITEMS.map((item, index) => [item.id, { ...item, index }]));
-const lastItemId = ITEMS[ITEMS.length - 1].id;
+// The walkthrough: one evening at home, four scenes matching the illustration's
+// zones. Each scene opens with a short interstitial — deliberately flat, domestic
+// prose (the historical quotes do the arguing) — while the camera rests at a wide
+// shot of that zone. Scene `items` lists set the step order; each scene's accent
+// carries through its hotspots, rail ticks, kickers, and drop caps.
+// NOTE: interstitial `text` is draft copy, written for rhythm — edit freely.
+const SCENES = [
+  {
+    id: "scene-sitting",
+    label: "The sitting room",
+    accent: "#d79b2d",
+    accentInk: "#8a6110",
+    x: 18, y: 56, zoom: 1.25, zoomCompact: 1.25,
+    text: "It’s eight o’clock. It’s quiet in the apartment, aside from the music playing softly over the speaker. You smile; it’s a playlist your friend made for you years ago. You send them a text to check in, then pick up a book, flick on the lamp, and settle into the chair to read.",
+    items: ["music", "light", "painting", "photo", "glasses", "phone", "books"]
+  },
+  {
+    id: "scene-kitchen",
+    label: "The kitchen",
+    accent: "#687d50",
+    accentInk: "#55673f",
+    x: 44, y: 50, zoom: 1.25, zoomCompact: 1.25,
+    text: "It’s nine. A chapter ends, and you stretch and wander into the kitchen. You’re not exactly sure what you want, so you aimlessly rifle through your fruit bowl, open and close the door to the fridge, and settle on a cup of tea. You lean against the counter and let your mind wander as the water comes to a boil.",
+    items: ["water", "fruit", "fridge", "spices"]
+  },
+  {
+    id: "scene-utility",
+    label: "The back room",
+    accent: "#154f65",
+    accentInk: "#154f65",
+    x: 75, y: 48, zoom: 1.25, zoomCompact: 1.25,
+    text: "At ten, the night starts to wind down. You wash your face, then wash down a pill with a glass of water. As you brush your teeth, you make a mental note of the last few chores you need to cross off the list tomorrow morning before heading to the airport. It’ll be nice to spend the week with family.",
+    items: ["vaccine", "anesthesia", "plumbing", "bicycle", "laundry", "sewing", "heating", "flight"]
+  }
+];
+
+const itemsById = new Map(ITEMS.map((item) => [item.id, item]));
+
+// Flatten scenes + items into reading order; items inherit their scene's accent
+// so every color on the page traces back to the room it belongs to.
+const registry = new Map();
+const orderedItems = [];
+let lastStepId = null;
+
+SCENES.forEach((scene) => {
+  registry.set(scene.id, { ...scene, kind: "scene" });
+  lastStepId = scene.id;
+  scene.items.forEach((itemId) => {
+    const item = itemsById.get(itemId);
+    if (!item) {
+      console.warn(`Scene "${scene.id}" references unknown item "${itemId}"`);
+      return;
+    }
+    const entry = { ...item, kind: "item", scene, color: scene.accent, index: orderedItems.length };
+    registry.set(item.id, entry);
+    orderedItems.push(entry);
+    lastStepId = item.id;
+  });
+});
+
+const state = { activeId: SCENES[0].id };
 const buttons = new Map();
 const railButtons = new Map();
 const steps = new Map();
@@ -1197,6 +1546,8 @@ const stepsRoot = document.getElementById("steps");
 const focusWash = document.getElementById("focusWash");
 const activeMini = document.getElementById("activeMini");
 const activeSource = document.getElementById("activeSource");
+const closeStage = document.getElementById("closeStage");
+const closeSteps = document.getElementById("closeSteps");
 const ROOM_RATIO = 1672 / 941;
 let manualNavigationUntil = 0;
 
@@ -1231,7 +1582,7 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function updateRoomFocus(item = byId.get(state.activeId)) {
+function updateRoomFocus(item = registry.get(state.activeId)) {
   if (!roomFrame || !imagePlane || !hotspotPlane || !item) return;
 
   const frame = roomFrame.getBoundingClientRect();
@@ -1246,10 +1597,24 @@ function updateRoomFocus(item = byId.get(state.activeId)) {
   }
 
   const compact = window.matchMedia("(max-width: 1050px)").matches;
-  // Stronger zoom on the smaller mobile/tablet viewport so the active object reads clearly.
-  const scale = compact ? 1.5 : (item.zoom || 1.16);
-  let tx = (frame.width / 2) - ((item.x / 100) * baseWidth * scale);
-  let ty = (frame.height / 2) - ((item.y / 100) * baseHeight * scale);
+  // Stronger zoom on the smaller mobile/tablet viewport so the active object reads
+  // clearly; scene interstitials rest at a wider shot in both layouts. The default
+  // sits close enough that each scene shift reveals a room the last one obscured.
+  const scale = compact ? (item.zoomCompact || 1.5) : (item.zoom || 1.3);
+  // focusX/focusY aim the camera separately from the hotspot dot — for objects
+  // near the image's edges (e.g. the high-hung painting), aiming slightly off
+  // the dot keeps the camera's travel between neighbouring beats calmer.
+  let aimX = item.focusX ?? item.x;
+  let aimY = item.focusY ?? item.y;
+  // Damp the camera's beat-to-beat tracking toward the scene's resting point —
+  // lightly in x (the walk across the room is the point), more firmly in y —
+  // so adjacent beats read as glances around the room, not lurches.
+  if (item.kind === "item" && item.scene) {
+    aimX = item.scene.x + (aimX - item.scene.x) * 0.9;
+    aimY = item.scene.y + (aimY - item.scene.y) * 0.6;
+  }
+  let tx = (frame.width / 2) - ((aimX / 100) * baseWidth * scale);
+  let ty = (frame.height / 2) - ((aimY / 100) * baseHeight * scale);
   const minTx = frame.width - (baseWidth * scale);
   const minTy = frame.height - (baseHeight * scale);
   tx = minTx > 0 ? minTx / 2 : clamp(tx, minTx, 0);
@@ -1294,37 +1659,105 @@ function makeStep(item) {
   article.className = "step";
   article.dataset.id = item.id;
   article.tabIndex = -1;
+  article.style.setProperty("--accent-ink", item.scene.accentInk);
+  const sourceLine = item.attribution
+    ? esc(item.attribution)
+    : `<span class="source-name">${esc(item.who)}, ${esc(item.year)}</span> — ${esc(item.source)}`;
   article.innerHTML = `
     <h3 class="item-title">${esc(item.title)}</h3>
     <blockquote class="quote">${esc(item.quote)}</blockquote>
-    <p class="source">${item.attribution ? esc(item.attribution) : `${esc(item.who)}, ${esc(item.year)}. ${esc(item.source)}`}</p>
+    <p class="source">${sourceLine}</p>
     <p class="context">${esc(item.context)}</p>
   `;
   stepsRoot.appendChild(article);
   steps.set(item.id, article);
 }
 
-function makeRail(item) {
+// Scene interstitials share the step machinery (they're scroll steps with a camera
+// target) but carry no hotspot, no rail tick — just prose and a wide shot.
+function makeSceneStep(scene) {
+  const article = document.createElement("article");
+  article.className = "step scene-step";
+  article.dataset.id = scene.id;
+  article.tabIndex = -1;
+  article.style.setProperty("--accent-ink", scene.accentInk);
+  article.innerHTML = `
+    <p class="scene-kicker">${esc(scene.label)}</p>
+    <p class="scene-text">${esc(scene.text)}</p>
+  `;
+  stepsRoot.appendChild(article);
+  steps.set(scene.id, article);
+}
+
+function makeRail(item, isSceneStart) {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "rail-button";
+  button.className = "rail-button" + (isSceneStart ? " scene-start" : "");
   button.dataset.id = item.id;
   button.style.setProperty("--accent", item.color);
   button.title = `${item.object} · ${item.year}`;
-  button.setAttribute("aria-label", `${item.object}, ${item.year}`);
+  button.setAttribute("aria-label", `${item.object}, ${item.year} (${item.scene.label})`);
   button.addEventListener("click", () => goToStep(item.id));
   rail.appendChild(button);
   railButtons.set(item.id, button);
 }
 
+// In-image spotlight: eased toward the active item, in image coordinates, so it
+// rides the camera transform for free. Reduced-motion users get a direct jump.
+const spot = { x: 50, y: 50, initialized: false };
+const spotTarget = { x: 50, y: 50 };
+let spotRaf = 0;
+
+function renderSpot() {
+  imagePlane.style.setProperty("--fx", `${spot.x.toFixed(2)}%`);
+  imagePlane.style.setProperty("--fy", `${spot.y.toFixed(2)}%`);
+}
+
+function stepSpot() {
+  spotRaf = 0;
+  const dx = spotTarget.x - spot.x;
+  const dy = spotTarget.y - spot.y;
+  if (Math.abs(dx) < .05 && Math.abs(dy) < .05) {
+    spot.x = spotTarget.x;
+    spot.y = spotTarget.y;
+  } else {
+    spot.x += dx * .14;
+    spot.y += dy * .14;
+    spotRaf = requestAnimationFrame(stepSpot);
+  }
+  renderSpot();
+}
+
+function setSpotlight(item) {
+  spotTarget.x = item.x;
+  spotTarget.y = item.y;
+  if (!spot.initialized || prefersReducedMotion.matches) {
+    spot.x = spotTarget.x;
+    spot.y = spotTarget.y;
+    spot.initialized = true;
+    renderSpot();
+    return;
+  }
+  if (!spotRaf) spotRaf = requestAnimationFrame(stepSpot);
+}
+
 function setActive(id, options = {}) {
-  const item = byId.get(id);
-  if (!item) return;
+  const entry = registry.get(id);
+  if (!entry) return;
   state.activeId = id;
 
-  activeMini.textContent = item.title;
-  activeSource.textContent = `${item.who}, ${item.year}`;
-  updateRoomFocus(item);
+  const isScene = entry.kind === "scene";
+  // The caption under the image names what you're looking at (the object for
+  // item beats, the room for scene rests), tinted to the scene's ink.
+  activeMini.textContent = isScene ? entry.label : entry.then;
+  activeMini.style.color = (isScene ? entry : entry.scene).accentInk;
+  activeSource.textContent = isScene ? "" : `${entry.who}, ${entry.year}`;
+  updateRoomFocus(entry);
+
+  // Item beats spotlight the object in the image; scene rests show the whole
+  // room evenly lit.
+  roomFrame.classList.toggle("is-focused", !isScene);
+  if (!isScene) setSpotlight(entry);
 
   buttons.forEach((button, key) => {
     const active = key === id;
@@ -1338,45 +1771,110 @@ function setActive(id, options = {}) {
     button.setAttribute("aria-current", active ? "true" : "false");
   });
 
-  // Fill the progress track to the active tick's position, tinted to its accent.
-  rail.style.setProperty("--progress", `${((item.index + 0.5) / ITEMS.length) * 100}%`);
-  rail.style.setProperty("--progress-color", item.color);
+  // Fill the progress track to the active position, tinted to the scene's accent.
+  // A scene rest sits at the boundary before its first item.
+  const progress = isScene
+    ? (entry.items.length ? (registry.get(entry.items[0]).index / orderedItems.length) * 100 : 100)
+    : ((entry.index + 0.5) / orderedItems.length) * 100;
+  rail.style.setProperty("--progress", `${progress}%`);
+  rail.style.setProperty("--progress-color", isScene ? entry.accent : entry.color);
 
   steps.forEach((step, key) => {
     step.classList.toggle("is-active", key === id);
   });
 }
 
-ITEMS.forEach((item) => {
-  makeHotspot(item);
-  makeStep(item);
-  makeRail(item);
+SCENES.forEach((scene, sceneIndex) => {
+  makeSceneStep(scene);
+  scene.items.forEach((itemId, itemIndex) => {
+    const entry = registry.get(itemId);
+    if (!entry || entry.kind !== "item") return;
+    // Hotspot dots retired in favor of the in-image spotlight — makeHotspot(entry)
+    // restores them.
+    makeStep(entry);
+    makeRail(entry, sceneIndex > 0 && itemIndex === 0);
+  });
 });
+
+// The closing turn: markers on the full-room image light one by one in the order
+// each miracle actually arrived (availableSort), re-reading the room in time
+// instead of space. Reduced-motion users get them all at once via CSS.
+const reveal = document.querySelector(".room-reveal");
+if (reveal && "IntersectionObserver" in window) {
+  const dots = document.createElement("div");
+  dots.className = "reveal-dots";
+  dots.setAttribute("aria-hidden", "true");
+  orderedItems
+    .slice()
+    .sort((a, b) => a.availableSort - b.availableSort)
+    .forEach((item, i) => {
+      const dot = document.createElement("span");
+      dot.className = "reveal-dot";
+      dot.style.setProperty("--x", `${item.x}%`);
+      dot.style.setProperty("--y", `${item.y}%`);
+      dot.style.setProperty("--delay", `${(i * 0.12).toFixed(2)}s`);
+      dots.appendChild(dot);
+    });
+  reveal.appendChild(dots);
+
+  const bloomWatcher = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) {
+      reveal.classList.add("is-bloomed");
+      bloomWatcher.disconnect();
+    }
+  }, { threshold: 0.4 });
+  bloomWatcher.observe(reveal);
+}
 
 let scrollFrame = 0;
 
 function syncActiveFromScroll() {
   scrollFrame = 0;
+  // The scroll cue has served its purpose after the first meaningful scroll.
+  document.body.classList.toggle("has-scrolled", window.scrollY > 60);
   if (storySection) {
     const storyRect = storySection.getBoundingClientRect();
     const inStory = storyRect.top <= 18 && storyRect.bottom > 60;
-    // Progress bar: visible the whole way through the story.
-    document.body.classList.toggle("is-story-header", inStory);
-    // Floating title: also bow out once the final card is active, so it slides up and
-    // away before the sticky room releases and scrolls up under it (no more overlap).
-    document.body.classList.toggle("is-title-visible", inStory && state.activeId !== lastItemId);
+    // Progress bar and floating title both bow out at the final beat — the tour
+    // is over before the room releases and the coda + closing reveal begin.
+    document.body.classList.toggle("is-story-header", inStory && state.activeId !== lastStepId);
+    document.body.classList.toggle("is-title-visible", inStory && state.activeId !== lastStepId);
   }
+
+  // The closing fade. Desktop: the lights go out only after the last closing
+  // card has scrolled past the pinned room — darkness tracks the copy's exit.
+  // Mobile (no pinning): darkness follows the figure's climb up the viewport.
+  // Capped short of full black so the room stays faintly visible: a dark
+  // apartment, not a title card.
+  if (closeStage && closeSteps && reveal) {
+    const compactClose = window.matchMedia("(max-width: 1050px)").matches;
+    let p = 0;
+    if (compactClose) {
+      const fig = reveal.getBoundingClientRect();
+      const figCenter = fig.top + fig.height / 2;
+      p = clamp((window.innerHeight / 2 - figCenter) / (window.innerHeight * 0.45), 0, 1);
+    } else {
+      // Key off the last card itself — the steps container's bottom includes
+      // the fade-runway padding, which would postpone the fade indefinitely.
+      // Darkness starts only once the card has fully left the viewport, so the
+      // whole lit room gets a beat to itself before the lights go out.
+      const lastCard = closeSteps.lastElementChild.getBoundingClientRect();
+      p = clamp(-lastCard.bottom / (window.innerHeight * .75), 0, 1);
+    }
+    closeStage.style.setProperty("--dark", (p * .88).toFixed(3));
+  }
+
   if (Date.now() < manualNavigationUntil) return;
 
   // Lower the trigger line on mobile (where the room is pinned at the top) so the
   // room's focus advances to the next item a little earlier in the scroll.
   const compact = window.matchMedia("(max-width: 1050px)").matches;
   const readingLine = window.innerHeight * (compact ? 0.68 : 0.58);
-  let candidateId = ITEMS[0].id;
+  let candidateId = SCENES[0].id;
   let candidateTop = -Infinity;
 
   steps.forEach((step, id) => {
-    const anchor = step.querySelector(".quote") || step;
+    const anchor = step.querySelector(".quote, .scene-text") || step;
     const top = anchor.getBoundingClientRect().top;
     if (top <= readingLine && top > candidateTop) {
       candidateId = id;
