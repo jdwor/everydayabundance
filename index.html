@@ -209,27 +209,26 @@
     line-height: 1.5;
   }
 
-  .hero-art {
-    position: absolute;
-    z-index: 1;
-    inset: -8% -4% -8% 32%;
-    margin: 0;
-    opacity: .12;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    background-image: var(--room-img);
-    background-repeat: no-repeat;
-    background-position: center right;
-    background-size: cover;
-    filter: saturate(.9) contrast(.95);
-  }
-
-  .hero-art::after {
+  /* The room, washed faintly behind the hero at full bleed — anchored to the
+     hero itself (not the centered grid) so it always reaches the edges. On
+     wide screens the paper fades in from the left to keep the title clean. */
+  .hero::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, var(--paper-warm) 0%, rgba(251, 244, 230, .78) 23%, rgba(251, 244, 230, 0) 55%);
+    z-index: 0;
+    pointer-events: none;
+    opacity: .12;
+    mix-blend-mode: multiply;
+    background-image:
+      linear-gradient(90deg, #fbf4e6 0%, rgba(251, 244, 230, .78) 23%, rgba(251, 244, 230, 0) 55%),
+      var(--room-img);
+    background-size: 100% 100%, cover;
+    background-position: 0 0, center right;
+    background-repeat: no-repeat;
+    filter: saturate(.9) contrast(.95);
   }
+
 
   .route-note {
     width: min(1500px, calc(100% - 2rem));
@@ -858,7 +857,10 @@
       display: none;
     }
 
+    /* Fill the first viewport so the scroll cue below lands at the fold on
+       load, matching desktop; 4.75rem approximates the cue's own height. */
     .hero {
+      min-height: calc(100svh - 4.75rem);
       padding: 2rem 1rem 1rem;
     }
 
@@ -881,11 +883,15 @@
       gap: 1.4rem;
     }
 
-    .hero-art {
-      display: none;
+    /* Phones: the title sits at the hero's bottom, so the wash fades top-down
+       to paper instead of left-to-right. */
+    .hero::before {
+      background-image:
+        linear-gradient(180deg, rgba(251, 244, 230, .1), rgba(251, 244, 230, 0) 30%, rgba(251, 244, 230, .85) 75%),
+        var(--room-img);
+      background-position: 0 0, 58% center;
     }
 
-    .hero-art img,
     .room-frame {
       border-left: 0;
       border-right: 0;
@@ -937,7 +943,6 @@
         <h1 id="title">Ordinary Abundance</h1>
         <p class="dek">Edward Bellamy once imagined that music on demand would be "the limit of human felicity." A modern apartment is full of things that once drew the same kind of awe.</p>
       </div>
-      <figure class="hero-art" aria-hidden="true"></figure>
     </div>
   </section>
   <p class="route-note">scroll to move through the apartment</p>
@@ -962,7 +967,7 @@
       <div id="steps">
       <article class="step scene-step" data-id="scene-sitting" tabindex="-1" style="--accent-ink: #8a6110">
         <p class="scene-kicker">The sitting room</p>
-        <p class="scene-text">It’s eight o’clock. It’s quiet in the apartment, aside from the music playing softly over the speaker. You smile; it’s a playlist your friend made for you years ago. You send them a text to check in, then pick up a book, flick on the lamp, and settle into the chair to read.</p>
+        <p class="scene-text">It’s eight o’clock. It’s quiet in the apartment, aside from the music playing softly over the speaker. It’s a playlist your friend made for you years ago. You send them a text to check in, then pick up a book, flick on the lamp, and settle into the chair to read.</p>
       </article>
       <article class="step" data-id="music" tabindex="-1" style="--accent-ink: #8a6110">
         <h3 class="item-title">Any song, at home</h3>
@@ -1025,7 +1030,7 @@
       </article>
       <article class="step scene-step" data-id="scene-utility" tabindex="-1" style="--accent-ink: #154f65">
         <p class="scene-kicker">The back room</p>
-        <p class="scene-text">At ten, the night starts to wind down. You wash your face, then wash down a pill with a glass of water. As you brush your teeth, you make a mental note of the last few chores you need to cross off the list tomorrow morning before heading to the airport. It’ll be nice to spend the week with family.</p>
+        <p class="scene-text">At ten, the night starts to wind down. You wash your face, then wash down a pill with a glass of water. As you brush your teeth, you make a mental note of the last few chores you need to cross off the list tomorrow morning before heading to the airport.</p>
       </article>
       <article class="step" data-id="vaccine" tabindex="-1" style="--accent-ink: #154f65">
         <h3 class="item-title">Smallpox made historical</h3>
